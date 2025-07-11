@@ -6,10 +6,12 @@ pipeline {
     }
 
     stages {
-        stage('Clone') {
-            steps {
-                git 'https://github.com/gupta177chirag/flask-jenkins-ci.git'
-            }
+       stage('Clone') {
+    steps {
+        git branch: 'main', url: 'https://github.com/gupta177chirag/flask-jenkins-ci.git'
+    }
+}
+
         }
         stage('Build Docker Image') {
             steps {
