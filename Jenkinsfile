@@ -1,40 +1,40 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = 'yourdockerhub/flask-jenkins-project'
-    }
-
     stages {
-       stage('Clone') {
-    steps {
-        git branch: 'main', url: 'https://github.com/gupta177chirag/flask-jenkins-ci.git'
-    }
-}
-
-        }
-        stage('Build Docker Image') {
+        stage('Clone') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                git branch: 'main', url: 'https://github.com/gupta177chirag/flask-jenkins-ci.git'
             }
         }
-        stage('Push Docker Image') {
+
+        stage('Build Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
-                    docker push $IMAGE_NAME
-                    '''
+                script {
+                    echo "Building Docker image..."
+                    sh 'docker build -t flask-jenkins-app .'
                 }
             }
         }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    echo "Pushing Docker image to Docker Hub..."
+                    sh 'docker tag flask-jenkins-app chirag177gupta/flask-jenkins-app:latest'
+                    sh 'docker push chirag177gupta/flask-jenkins-app:latest'
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
-                sh '''
-                docker stop flask-jenkins-project || true
-                docker rm flask-jenkins-project || true
-                docker run -d -p 5000:5000 --name flask-jenkins-project $IMAGE_NAME
-                '''
+                script {
+                    echo "Deploying the Docker container..."
+                    sh 'docker stop flask-jenkins-container || true'
+                    sh 'docker rm flask-jenkins-container || true'
+                    sh 'docker run -d -p 5000:5000 --name flask-jenkins-container chirag177gupta/flask-jenkins-app:latest'
+                }
             }
         }
     }
