@@ -33,7 +33,7 @@ pipeline {
                     echo "Deploying the Docker container..."
                     sh 'docker stop flask-jenkins-container || true'
                     sh 'docker rm flask-jenkins-container || true'
-                    sh 'docker run -d -p 5000:5000 --name flask-jenkins-container chirag177gupta/flask-jenkins-app:latest'
+                    sh 'docker run -d -p 5001:5000 --name flask-jenkins-container chirag177gupta/flask-jenkins-app:latest'
                 }
             }
         }
